@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Research Outreach Challenge</title>
+<style>
+  :root {
+    --navy: #123b5d;
+    --orange: #f97316;
+    --orange-light: #fff7ed;
+    --text: #172033;
+    --muted: #64748b;
+    --border: #dbe3ee;
+    --panel: #f8fafc;
+    --white: #ffffff;
+    --green: #16a34a;
+    --green-light: #f0fdf4;
+    --red: #dc2626;
+    --red-light: #fef2f2;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+      "Segoe UI", sans-serif;
+    background: #eef2f7;
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 760px;
+  }
+
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(18, 59, 93, 0.08);
+  }
+
+  .header {
+    background: var(--navy);
+    color: white;
+    padding: 28px 30px;
+  }
+
+  .eyebrow {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    opacity: 0.8;
+  }
+
+  h1 {
+    margin: 8px 0 4px;
+    font-size: clamp(28px, 5vw, 38px);
+    line-height: 1.1;
+  }
+
+  .subtitle {
+    margin: 8px 0 0;
+    font-size: 16px;
+    opacity: 0.9;
+  }
+
+  .content {
+    padding: 28px;
+  }
+
+  .top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 14px;
+  }
+
+  .round {
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .points {
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .progress-track {
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 28px;
+  }
+
+  .progress {
+    height: 100%;
+    width: 20%;
+    background: var(--orange);
+    border-radius: inherit;
+    transition: width 0.25s ease;
+  }
+
+  .question {
+    font-size: clamp(20px, 4vw, 26px);
+    line-height: 1.35;
+    font-weight: 800;
+    margin-bottom: 20px;
+  }
+
+  .answers {
+    display: grid;
+    gap: 12px;
+  }
+
+  .answer {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    text-align: left;
+    padding: 15px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--white);
+    color: var(--text);
+    font: inherit;
+    cursor: pointer;
+    transition: 0.15s ease;
+  }
+
+  .answer:hover:not(:disabled) {
+    border-color: var(--orange);
+    transform: translateY(-1px);
+  }
+
+  .answer:focus-visible,
+  .button:focus-visible {
+    outline: 3px solid rgba(249, 115, 22, 0.35);
+    outline-offset: 2px;
+  }
+
+  .answer.selected {
+    border-color: var(--orange);
+    background: var(--orange-light);
+  }
+
+  .answer.correct {
+    border-color: var(--green);
+    background: var(--green-light);
+  }
+
+  .answer.incorrect {
+    border-color: var(--red);
+    background: var(--red-light);
+  }
+
+  .letter {
+    min-width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--panel);
+    font-weight: 900;
+  }
+
+  .answer-text {
+    line-height: 1.4;
+  }
+
+  .feedback {
+    margin-top: 18px;
+    padding: 15px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .feedback.good {
+    background: var(--green-light);
+    color: #166534;
+  }
+
+  .feedback.bad {
+    background: var(--red-light);
+    color: #991b1b;
+  }
+
+  .button {
+    margin-top: 20px;
+    border: 0;
+    border-radius: 12px;
+    padding: 13px 20px;
+    background: var(--orange);
+    color: white;
+    font: inherit;
+    font-weight: 800;
+    cursor: pointer;
+  }
+
+  .button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .hidden { display: none !important; }
+
+  .result {
+    padding: 28px;
+  }
+
+  .score-big {
+    text-align: center;
+    font-size: 64px;
+    font-weight: 950;
+    line-height: 1;
+  }
+
+  .result-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 850;
+    margin-top: 12px;
+  }
+
+  .formula {
+    margin-top: 24px;
+    padding: 20px;
+    border-radius: 14px;
+    background: var(--panel);
+  }
+
+  .formula h2 {
+    margin: 0 0 14px;
+    font-size: 19px;
+  }
+
+  .formula-item {
+    padding: 8px 0;
+    line-height: 1.45;
+  }
+
+  .start-screen {
+    text-align: center;
+    padding: 35px 10px 10px;
+  }
+
+  .start-icon {
+    font-size: 56px;
+  }
+
+  .start-screen h2 {
+    font-size: 28px;
+    margin: 12px 0 8px;
+  }
+
+  .start-screen p {
+    max-width: 540px;
+    margin: 0 auto;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  .instructions {
+    margin: 24px auto 0;
+    max-width: 500px;
+    text-align: left;
+    background: var(--panel);
+    border-radius: 14px;
+    padding: 18px;
+  }
+
+  .instructions div {
+    padding: 7px 0;
+  }
+
+  @media (max-width: 560px) {
+    body { padding: 10px; }
+    .header { padding: 22px 20px; }
+    .content { padding: 20px; }
+    .question { font-size: 21px; }
+    .answer { padding: 13px; }
+  }
+</style>
+</head>
+
+<body>
+<main class="app">
+  <section class="card" id="gameCard">
+    <header class="header">
+      <div class="eyebrow">SHPE • UNDERGRADUATE RESEARCH</div>
+      <h1>The Research Outreach Challenge</h1>
+      <p class="subtitle">Can you build an email that gets a professor interested?</p>
+    </header>
+
+    <div class="content" id="startScreen">
+      <div class="start-screen">
+        <div class="start-icon">🎓</div>
+        <h2>Build the perfect research email</h2>
+        <p>
+          You found a professor whose research interests you. Your job is to
+          choose the strongest response at each step.
+        </p>
+
+        <div class="instructions">
+          <div>🔎 <strong>Research</strong> — Know the professor's work.</div>
+          <div>🔗 <strong>Connect</strong> — Explain why it interests you.</div>
+          <div>🛠️ <strong>Offer</strong> — Show relevant skills and experience.</div>
+          <div>💬 <strong>Ask</strong> — Start a conversation about opportunities.</div>
+        </div>
+
+        <button class="button" id="startButton">Start Challenge →</button>
+      </div>
+    </div>
+
+    <div class="content hidden" id="gameScreen">
+      <div class="top-row">
+        <div class="round" id="round">ROUND 1 OF 5</div>
+        <div class="points" id="points">0 points</div>
+      </div>
+
+      <div class="progress-track">
+        <div class="progress" id="progress"></div>
+      </div>
+
+      <div class="question" id="question"></div>
+      <div class="answers" id="answers"></div>
+
+      <div class="feedback hidden" id="feedback" aria-live="polite"></div>
+
+      <button class="button" id="actionButton" disabled>
+        Lock In Answer
+      </button>
+    </div>
+
+    <div class="result hidden" id="resultScreen"></div>
+  </section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  const questions = [
+    {
+      question:
+        "You found a professor whose research interests you. Which subject line should you use?",
+      answers: [
+        "Research Opportunity",
+        "Question",
+        "Undergraduate Research Inquiry — [Specific Research Area]",
+        "PLEASE LET ME JOIN YOUR LAB"
+      ],
+      correct: 2,
+      explanation:
+        "A specific subject line tells the professor immediately why you are contacting them."
+    },
+    {
+      question:
+        "How should you introduce yourself?",
+      answers: [
+        "Hi Professor, I wanted to ask you something.",
+        "My name is [Name], and I am a [year/major] student interested in undergraduate research.",
+        "I have always dreamed of doing research and I think your lab is amazing!",
+        "My friend told me to email you."
+      ],
+      correct: 1,
+      explanation:
+        "Give enough context to identify yourself, but keep the introduction short."
+    },
+    {
+      question:
+        "You researched the professor. What should you say next?",
+      answers: [
+        "Your research looks really interesting.",
+        "I am particularly interested in your work on [specific topic], especially your research on [specific project/paper].",
+        "I read every paper you have published.",
+        "Your research would look great on my résumé."
+      ],
+      correct: 1,
+      explanation:
+        "This is what makes the email personal. Identify a real connection to the professor's research."
+    },
+    {
+      question:
+        "What should you say about what YOU bring to the lab?",
+      answers: [
+        "I am willing to do anything you need.",
+        "I think I would be a great addition because I am passionate.",
+        "My coursework and experience with [relevant course, lab, software, or project] have given me skills that could be useful to your research.",
+        "I do not have much experience yet, but I am probably a fast learner."
+      ],
+      correct: 2,
+      explanation:
+        "Concrete evidence is stronger than generic claims. Coursework, technical skills, projects, and lab experience all count."
+    },
+    {
+      question:
+        "How should you make the actual request?",
+      answers: [
+        "Can I join your lab? Let me know ASAP.",
+        "I need research experience for my résumé. Can you give me a position?",
+        "I would appreciate the opportunity to briefly discuss whether there may be an opportunity for me to contribute to your research. I would be happy to provide my CV.",
+        "Please respond as soon as possible because I am contacting other professors too."
+      ],
+      correct: 2,
+      explanation:
+        "The goal is to open a conversation. Make a clear, respectful request rather than demanding a position."
+    }
+  ];
+
+  let current = 0;
+  let score = 0;
+  let selected = -1;
+  let locked = false;
+
+  const startScreen = document.getElementById("startScreen");
+  const gameScreen = document.getElementById("gameScreen");
+  const resultScreen = document.getElementById("resultScreen");
+  const startButton = document.getElementById("startButton");
+  const round = document.getElementById("round");
+  const points = document.getElementById("points");
+  const progress = document.getElementById("progress");
+  const question = document.getElementById("question");
+  const answers = document.getElementById("answers");
+  const feedback = document.getElementById("feedback");
+  const actionButton = document.getElementById("actionButton");
+
+  function renderQuestion() {
+    const data = questions[current];
+
+    selected = -1;
+    locked = false;
+
+    round.textContent = "ROUND " + (current + 1) + " OF " + questions.length;
+    points.textContent = score + (score === 1 ? " point" : " points");
+    progress.style.width =
+      ((current + 1) / questions.length) * 100 + "%";
+
+    question.textContent = data.question;
+    answers.innerHTML = "";
+    feedback.className = "feedback hidden";
+    feedback.textContent = "";
+
+    actionButton.disabled = true;
+    actionButton.textContent =
+      current === questions.length - 1
+        ? "Lock In Answer"
+        : "Lock In Answer";
+
+    data.answers.forEach(function (answer, index) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "answer";
+
+      const letter = document.createElement("span");
+      letter.className = "letter";
+      letter.textContent = String.fromCharCode(65 + index);
+
+      const text = document.createElement("span");
+      text.className = "answer-text";
+      text.textContent = answer;
+
+      button.appendChild(letter);
+      button.appendChild(text);
+
+      button.addEventListener("click", function () {
+        if (locked) return;
+
+        selected = index;
+
+        document
+          .querySelectorAll(".answer")
+          .forEach(function (item) {
+            item.classList.remove("selected");
+          });
+
+        button.classList.add("selected");
+        actionButton.disabled = false;
+      });
+
+      answers.appendChild(button);
+    });
+  }
+
+  function lockAnswer() {
+    if (selected < 0 || locked) return;
+
+    locked = true;
+
+    const data = questions[current];
+    const buttons = document.querySelectorAll(".answer");
+
+    buttons.forEach(function (button, index) {
+      button.disabled = true;
+
+      if (index === data.correct) {
+        button.classList.add("correct");
+      }
+
+      if (index === selected && index !== data.correct) {
+        button.classList.add("incorrect");
+      }
+    });
+
+    if (selected === data.correct) {
+      score++;
+      feedback.className = "feedback good";
+      feedback.innerHTML =
+        "<strong>✓ Correct!</strong> " + data.explanation;
+    } else {
+      feedback.className = "feedback bad";
+      feedback.innerHTML =
+        "<strong>Not quite.</strong> " + data.explanation;
+    }
+
+    points.textContent = score + (score === 1 ? " point" : " points");
+
+    actionButton.textContent =
+      current === questions.length - 1 ? "See Your Result" : "Next →";
+  }
+
+  function nextQuestion() {
+    if (!locked) return;
+
+    if (current < questions.length - 1) {
+      current++;
+      renderQuestion();
+    } else {
+      showResult();
+    }
+  }
+
+  function showResult() {
+    gameScreen.classList.add("hidden");
+    resultScreen.classList.remove("hidden");
+
+    let message;
+
+    if (score === 5) {
+      message = "Perfect! You have the formula down.";
+    } else if (score >= 3) {
+      message =
+        "Nice! You know the fundamentals — now personalize every email.";
+    } else {
+      message =
+        "The formula is simple: research, connect, offer, and ask.";
+    }
+
+    resultScreen.innerHTML = `
+      <div class="score-big">${score}/5</div>
+      <div class="result-title">${message}</div>
+
+      <div class="formula">
+        <h2>The undergraduate research formula</h2>
+
+        <div class="formula-item">
+          🔎 <strong>Research</strong> — Know the professor's work.
+        </div>
+
+        <div class="formula-item">
+          🔗 <strong>Connect</strong> — Explain why their research interests you.
+        </div>
+
+        <div class="formula-item">
+          🛠️ <strong>Offer</strong> — Show relevant coursework, skills,
+          labs, or projects.
+        </div>
+
+        <div class="formula-item">
+          💬 <strong>Ask</strong> — Request a conversation about potential
+          opportunities.
+        </div>
+
+        <div class="formula-item">
+          ✉️ <strong>Keep it short</strong> — Professors are busy.
+        </div>
+      </div>
+
+      <div style="text-align:center">
+        <button class="button" id="againButton">Play Again</button>
+      </div>
+    `;
+
+    document
+      .getElementById("againButton")
+      .addEventListener("click", restart);
+  }
+
+  function restart() {
+    current = 0;
+    score = 0;
+    selected = -1;
+    locked = false;
+
+    resultScreen.classList.add("hidden");
+    gameScreen.classList.remove("hidden");
+
+    renderQuestion();
+  }
+
+  startButton.addEventListener("click", function () {
+    startScreen.classList.add("hidden");
+    gameScreen.classList.remove("hidden");
+    renderQuestion();
+  });
+
+  actionButton.addEventListener("click", function () {
+    if (!locked) {
+      lockAnswer();
+    } else {
+      nextQuestion();
+    }
+  });
+})();
+</script>
+</body>
+</html>
